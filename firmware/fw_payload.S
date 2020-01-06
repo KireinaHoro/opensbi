@@ -39,6 +39,8 @@ fw_save_info:
 	.global fw_prev_arg1
 	/*
 	 * We can only use a0, a1, and a2 registers here.
+	 * The a0, a1, and a2 registers will be same as passed by
+	 * previous booting stage.
 	 * The previous arg1 should be returned in 'a0'.
 	 */
 fw_prev_arg1:
@@ -54,13 +56,15 @@ fw_prev_arg1:
 	.global fw_next_arg1
 	/*
 	 * We can only use a0, a1, and a2 registers here.
+	 * The a0, a1, and a2 registers will be same as passed by
+	 * previous booting stage.
 	 * The next arg1 should be returned in 'a0'.
 	 */
 fw_next_arg1:
 #ifdef FW_PAYLOAD_FDT_ADDR
 	li	a0, FW_PAYLOAD_FDT_ADDR
 #else
-	add	a0, zero, zero
+	add	a0, a1, zero
 #endif
 	ret
 
