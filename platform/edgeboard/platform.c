@@ -39,42 +39,48 @@
 #define EDGEBOARD_ENABLED_HART_MASK	(1 << 0)
 #endif
 
+// Buffer for device tree modification
+#define EDGEBOARD_FDT_RWBUF ((void*)0x58000)
+#define EDGEBOARD_FDT_BUFSIZE 0x8000
+
 #define EDGEBOARD_HARITD_DISABLED			~(EDGEBOARD_ENABLED_HART_MASK)
 
 /* clang-format on */
 
-static void edgeboard_modify_dt(void *fdt)
+static void edgeboard_modify_dt(const void *fdt, void *rwbuf, size_t bufsize)
 {
-	u32 i, size;
+	u32 i;
 	int chosen_offset, err;
 	int cpu_offset;
 	char cpu_node[32] = "";
 	const char *mmu_type;
 
-	size = fdt_totalsize(fdt);
-	err  = fdt_open_into(fdt, fdt, size + 256);
+	err  = fdt_open_into(fdt, rwbuf, bufsize);
 	if (err < 0)
 		sbi_printf(
-			"Device Tree can't be expanded to accmodate new node");
+			"Device Tree @ 0x%p can't be expanded into 0x%p: err %d\n",
+			fdt, rwbuf, err);
 
 	for (i = 0; i < EDGEBOARD_HART_COUNT; i++) {
 		sbi_sprintf(cpu_node, "/cpus/cpu@%d", i);
-		cpu_offset = fdt_path_offset(fdt, cpu_node);
-		mmu_type   = fdt_getprop(fdt, cpu_offset, "mmu-type", NULL);
+		cpu_offset = fdt_path_offset(rwbuf, cpu_node);
+		mmu_type   = fdt_getprop(rwbuf, cpu_offset, "mmu-type", NULL);
 		if (mmu_type && (!strcmp(mmu_type, "riscv,sv39") ||
 				 !strcmp(mmu_type, "riscv,sv48")))
 			continue;
 		else
-			fdt_setprop_string(fdt, cpu_offset, "status",
+			fdt_setprop_string(rwbuf, cpu_offset, "status",
 					   "disabled");
 		memset(cpu_node, 0, sizeof(cpu_node));
 	}
 
-	chosen_offset = fdt_path_offset(fdt, "/chosen");
-	fdt_setprop_string(fdt, chosen_offset, "stdout-path",
-			   "/soc/serial@60400000:115200");
+	chosen_offset = fdt_path_offset(rwbuf, "/chosen");
+	fdt_setprop_string(rwbuf, chosen_offset, "stdout-path",
+			   "/soc/serial@e0001000:115200");
 
-	plic_fdt_fixup(fdt, "riscv,plic0");
+	plic_fdt_fixup(rwbuf, "riscv,plic0");
+	
+	sbi_printf("Modified device tree at 0x%p\n", rwbuf);
 }
 
 static int edgeboard_final_init(bool cold_boot)
@@ -85,7 +91,7 @@ static int edgeboard_final_init(bool cold_boot)
 		return 0;
 
 	fdt = sbi_scratch_thishart_arg1_ptr();
-	edgeboard_modify_dt(fdt);
+	edgeboard_modify_dt(fdt, EDGEBOARD_FDT_RWBUF, EDGEBOARD_FDT_BUFSIZE);
 
 	return 0;
 }
