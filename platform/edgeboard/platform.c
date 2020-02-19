@@ -92,7 +92,7 @@ static int edgeboard_final_init(bool cold_boot)
 
 static u32 edgeboard_pmp_region_count(u32 hartid)
 {
-	return 1;
+	return 8;
 }
 
 static int edgeboard_pmp_region_info(u32 hartid, u32 index, ulong *prot,
