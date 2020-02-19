@@ -8,6 +8,6 @@
 #
 
 platform-objs-y += platform.o
-ifdef ZCU102_ENABLED_HART_MASK
-platform-genflags-y += -DZCU102_ENABLED_HART_MASK=$(ZCU102_ENABLED_HART_MASK)
+ifdef EDGEBOARD_ENABLED_HART_MASK
+platform-genflags-y += -DEDGEBOARD_ENABLED_HART_MASK=$(EDGEBOARD_ENABLED_HART_MASK)
 endif
