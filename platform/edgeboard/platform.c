@@ -76,11 +76,13 @@ static void edgeboard_modify_dt(const void *fdt, void *rwbuf, size_t bufsize)
 
 	chosen_offset = fdt_path_offset(rwbuf, "/chosen");
 	fdt_setprop_string(rwbuf, chosen_offset, "stdout-path",
-			   "/soc/serial@e0001000:115200");
+			   "/soc/serial@e0000000:115200");
 
 	plic_fdt_fixup(rwbuf, "riscv,plic0");
 	
 	sbi_printf("Modified device tree at 0x%p\n", rwbuf);
+	struct sbi_scratch *scratch = sbi_scratch_thishart_ptr();
+	scratch->next_arg1 = (uint64_t)rwbuf;
 }
 
 static int edgeboard_final_init(bool cold_boot)

@@ -8,6 +8,7 @@
 #
 
 platform-objs-y += platform.o
+platform-dtb-y += edgeboard.dtb
 ifdef EDGEBOARD_ENABLED_HART_MASK
 platform-genflags-y += -DEDGEBOARD_ENABLED_HART_MASK=$(EDGEBOARD_ENABLED_HART_MASK)
 endif
