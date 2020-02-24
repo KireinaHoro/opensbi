@@ -9,8 +9,7 @@
 
 # Select Make Options:
 # o  Do not use make's built-in rules
-# o  Do not print "Entering directory ...";
-MAKEFLAGS += -r --no-print-directory
+MAKEFLAGS += -r
 
 # Find out source, build, and install directories
 src_dir=$(CURDIR)
@@ -266,6 +265,7 @@ targets-y += $(firmware-bins-path-y)
 
 # Default rule "make" should always be first rule
 .PHONY: all
+.DEFAULT_GOAL :=
 all: $(targets-y)
 
 # Preserve all intermediate files
@@ -411,6 +411,8 @@ clean:
 	$(CMD_PREFIX)find $(build_dir) -type f -name "*.elf" -exec rm -rf {} +
 	$(if $(V), @echo " RM        $(build_dir)/*.bin")
 	$(CMD_PREFIX)find $(build_dir) -type f -name "*.bin" -exec rm -rf {} +
+	$(if $(V), @echo " CLEAN     $(u-boot_root)")
+	$(MAKE) -C $(u-boot_root) clean
 
 # Rule for "make distclean"
 .PHONY: distclean
