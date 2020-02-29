@@ -114,6 +114,10 @@
                         reg = <0xff0b0000 0x1000>;
                         clocks = <&clk125>, <&clk125>, <&clk125>;
                         clock-names = "pclk", "hclk", "tx_clk";
+                        fixed-link {
+                                speed = <1000>;
+                                full-duplex;
+                        };
                 };
                 sdhci0: mmc@ff160000 {
                         u-boot,dm-pre-reloc;
