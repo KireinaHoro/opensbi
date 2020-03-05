@@ -64,7 +64,7 @@
                         compatible = "sifive,error0";
                         reg = <0x3000 0x1000>;
                 };
-                L2: interrupt-controller@c000000 {
+                plic: interrupt-controller@c000000 {
                         #interrupt-cells = <1>;
                         compatible = "riscv,plic0";
                         interrupt-controller;
@@ -98,39 +98,42 @@
                 };
                 axi_uart0: serial@e0000000 {
                         clock-frequency = <100000000>;
-                        compatible = "xlnx,axi-uart16550-1.01.a", "xlnx,xps-uart16550-2.00.a", "ns16550";
+                        compatible = "ns16550a";
                         current-speed = <115200>;
                         device_type = "serial";
-                        interrupt-parent = <&L2>;
+                        interrupt-parent = <&plic>;
                         interrupts = <1>;
                         reg = <0xe0000000 0x10000>;
                         reg-offset = <0x1000>;
                         reg-shift = <2>;
                 };
-                gem0: ethernet@ff0b0000 {
-                        compatible = "cdns,zynqmp-gem", "cdns,gem";
-                        interrupt-parent = <&L2>;
-                        interrupts = <2>, <3>;
-                        reg = <0xff0b0000 0x1000>;
-                        clocks = <&clk125>, <&clk125>, <&clk125>;
-                        clock-names = "pclk", "hclk", "tx_clk";
-                        fixed-link {
-                                speed = <1000>;
-                                full-duplex;
-                        };
+                axi_uart1: serial@e1000000 {
+                        clock-frequency = <100000000>;
+                        compatible = "ns16550a";
+                        current-speed = <115200>;
+                        device_type = "serial";
+                        interrupt-parent = <&plic>;
+                        interrupts = <2>;
+                        reg = <0xe1000000 0x10000>;
+                        reg-offset = <0x1000>;
+                        reg-shift = <2>;
                 };
-                sdhci0: mmc@ff160000 {
+                sdhci0: mmc@ff170000 {
                         u-boot,dm-pre-reloc;
                         compatible = "arasan,sdhci-8.9a";
-                        reg = <0xff160000 0x1000>;
+                        reg = <0xff170000 0x1000>;
                         clocks = <&clk200 &clk200>;
                         clock-names = "clk_xin", "clk_ahb";
-                        interrupt-parent = <&L2>;
+                        interrupt-parent = <&plic>;
                         interrupts = <4>;
+                        disable-adma;
+                        no-1-8-v;
+                        disable-wp;
                 };
         };
 
         chosen {
+                bootargs = "earlycon=sbi root=/dev/mmcblk0p2 rootwait";
                 stdout-path = "/soc/serial@e0000000:115200";
         };
 };
