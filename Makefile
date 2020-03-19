@@ -411,8 +411,6 @@ clean:
 	$(CMD_PREFIX)find $(build_dir) -type f -name "*.elf" -exec rm -rf {} +
 	$(if $(V), @echo " RM        $(build_dir)/*.bin")
 	$(CMD_PREFIX)find $(build_dir) -type f -name "*.bin" -exec rm -rf {} +
-	$(if $(V), @echo " CLEAN     $(u-boot_root)")
-	$(MAKE) -C $(u-boot_root) clean
 
 # Rule for "make distclean"
 .PHONY: distclean
