@@ -48,7 +48,7 @@ static inline char sbi_getc() {
 
 void test_main(unsigned long a0, unsigned long a1)
 {
-	sbi_ecall_console_puts("\nSimple echo server\n");
+	sbi_ecall_console_puts("\nS-mode entry point\n");
 
 
 	while (1)
