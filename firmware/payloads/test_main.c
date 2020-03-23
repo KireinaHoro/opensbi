@@ -19,11 +19,7 @@ int test_main(unsigned long a0, unsigned long a1)
 {
 	printf("\nS-mode entry point\n");
 
-	uint8_t *a = malloc(4096);
-	printf("malloc returned %p\n", a);
-
-	uint8_t *b = memalign(0x1000, 0x1000);
-	printf("memalign returned %p\n", b);
+	vminit();
 
 	printf("\nTest printf again\n");
 

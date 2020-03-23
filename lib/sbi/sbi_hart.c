@@ -34,6 +34,10 @@ static void mstatus_init(struct sbi_scratch *scratch, u32 hartid)
 	if (misa_extension('D') || misa_extension('F'))
 		csr_write(CSR_MSTATUS, MSTATUS_FS);
 
+	/* Enable Gemmini */
+	if (misa_extension('X'))
+		csr_set(CSR_MSTATUS, MSTATUS_XS & (MSTATUS_XS >> 1));
+
 	/* Enable user/supervisor use of perf counters */
 	if (misa_extension('S') && sbi_platform_has_scounteren(plat))
 		csr_write(CSR_SCOUNTEREN, -1);

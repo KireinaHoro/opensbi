@@ -28,13 +28,14 @@
 #define sbi_ecall_console_getc() SBI_ECALL_0(SBI_EXT_0_1_CONSOLE_GETCHAR)
 #define sbi_ecall_console_putc(c) SBI_ECALL_1(SBI_EXT_0_1_CONSOLE_PUTCHAR, (c))
 
-static inline void sbi_ecall_console_puts(const char *str)
+void sbi_ecall_console_puts(const char *str)
 {
 	while (str && *str)
 		sbi_ecall_console_putc(*str++);
 }
 
-static inline void sbi_ecall_console_printhex(uint64_t num) {
+static inline void sbi_ecall_console_printhex(uint64_t num)
+{
 	sbi_ecall_console_puts("0x");
 	for (int i = 15; i >= 0; --i) {
 		int digit = (num & (0xfL << (4 * i))) >> (4 * i);
@@ -53,11 +54,6 @@ static inline char sbi_getc()
 		;
 	return c;
 }
-
-#define wfi()                                             \
-	do {                                              \
-		__asm__ __volatile__("wfi" ::: "memory"); \
-	} while (0)
 
 int _write(int file, char *ptr, int len)
 {
@@ -83,7 +79,7 @@ extern intptr_t _heap_start;
 extern intptr_t _stack_end;
 
 intptr_t _sbrk(ptrdiff_t heap_incr)
-{	
+{
 	static intptr_t heap_end = (intptr_t)&_heap_start;
 
 	intptr_t prev_heap_end;

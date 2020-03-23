@@ -55,7 +55,7 @@ _start_warm:
 	csrw	CSR_SIP, zero
 
 	/* Setup exception vectors */
-	la	a3, _start_hang
+	la	a3, trap
 	csrw	CSR_STVEC, a3
 
 	/* Setup stack */

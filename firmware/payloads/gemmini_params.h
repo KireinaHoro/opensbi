@@ -20,10 +20,9 @@ elem_t elem_t_min = -128;
 typedef int8_t acc_t;
 typedef int64_t full_t;
 
-#define row_align(blocks)                                                      \
-  __attribute__((aligned(blocks * DIM * sizeof(elem_t))))
-#define row_align_acc(blocks)                                                  \
-  __attribute__((aligned(blocks * DIM * sizeof(acc_t))))
+#define row_align(blocks) \
+	__attribute__((aligned(blocks * DIM * sizeof(elem_t))))
+#define row_align_acc(blocks) \
+	__attribute__((aligned(blocks * DIM * sizeof(acc_t))))
 
 #endif // GEMMINI_PARAMS_H
-
