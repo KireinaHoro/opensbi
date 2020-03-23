@@ -41,7 +41,8 @@ static pte_t *walk(pagetable_t pagetable, uint64 va, int alloc)
 // physical addresses starting at pa. va and size might not
 // be page-aligned. Returns 0 on success, -1 if walk() couldn't
 // allocate a needed page-table page.
-int _mappages(pagetable_t pagetable, uint64 va, uint64 size, uint64 pa, int perm)
+int _mappages(pagetable_t pagetable, uint64 va, uint64 size, uint64 pa,
+	      int perm)
 {
 	uint64 a, last;
 	pte_t *pte;
@@ -60,9 +61,14 @@ int _mappages(pagetable_t pagetable, uint64 va, uint64 size, uint64 pa, int perm
 	return 0;
 }
 
-void mappages(pagetable_t pagetable, uint64 va, uint64 size, uint64 pa, int perm) {
+void mappages(pagetable_t pagetable, uint64 va, uint64 size, uint64 pa,
+	      int perm)
+{
+	printf("pagetable %p: %p -> %p (size %p, perm %d)\n", (void *)pagetable,
+	       (void *)va, (void *)pa, (void *)size, perm);
 	if (_mappages(pagetable, va, size, pa, perm)) {
-		printf("failed to map %p -> %p (size %p, perm %d) in pagetable %p\n", (void*)va, (void*)pa, (void*)size, perm, pagetable);
+		printf("failed to map %p -> %p (size %p, perm %d) in pagetable %p\n",
+		       (void *)va, (void *)pa, (void *)size, perm, pagetable);
 		exit(-1);
 	}
 }
@@ -73,7 +79,7 @@ void vminit()
 {
 	pagetable = memalign(PGSIZE, PGSIZE);
 	memset(pagetable, 0, PGSIZE);
-	printf("Creating pagetable at %p...\n", (void*)pagetable);
+	printf("Creating pagetable at %p...\n", (void *)pagetable);
 
 	// CLINT
 	mappages(pagetable, CLINT, 0x10000, CLINT, PTE_R | PTE_W);
@@ -85,12 +91,12 @@ void vminit()
 	mappages(pagetable, UART, PGSIZE, UART, PTE_R | PTE_W);
 
 	// DRAM
-	mappages(pagetable, DDR_BASE, DDR_SIZE, DDR_BASE,
-		 PTE_R | PTE_W | PTE_X);
+	mappages(pagetable, DDR_BASE + SBI_SIZE, DDR_SIZE - SBI_SIZE,
+		 DDR_BASE + SBI_SIZE, PTE_R | PTE_W | PTE_X | PTE_D | PTE_A);
 
 	printf("Enabling VM...\n");
 	w_satp(MAKE_SATP(pagetable));
 	sfence_vma();
-	
+
 	printf("done.\n");
 }

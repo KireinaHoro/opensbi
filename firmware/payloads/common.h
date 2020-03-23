@@ -2,6 +2,7 @@
 
 #define DDR_BASE 0x800000000L
 #define DDR_SIZE 0x80000000L
+#define SBI_SIZE 0x20000L
 
 #define PGROUNDDOWN(a) (((a)) & ~(PGSIZE - 1))
 
@@ -9,9 +10,12 @@
 #define PTE_R (1L << 1)
 #define PTE_W (1L << 2)
 #define PTE_X (1L << 3)
+#define PTE_U (1L << 4)
+#define PTE_G (1L << 5)
+#define PTE_A (1L << 6)
+#define PTE_D (1L << 7)
 
-#define PGSIZE 0x1000
-
+#define PGSIZE 4096  // bytes per page
 #define PGSHIFT 12   // bits of offset within a page
 #define PXMASK 0x1FF // 9 bits
 #define PXSHIFT(level) (PGSHIFT + (9 * (level)))

@@ -55,7 +55,7 @@ _start_warm:
 	csrw	CSR_SIP, zero
 
 	/* Setup exception vectors */
-	la	a3, trap
+	la	a3, _trap
 	csrw	CSR_STVEC, a3
 
 	/* Setup stack */
@@ -97,9 +97,7 @@ _boot_a0:
 _boot_a1:
 	RISCV_PTR	0
 
+_trap:
+	li	sp, 0x840000000 /* random stack */
+	j	trap
 
-#=========================================================================
-# crt0.S : Entry point for RISC-V user programs
-#=========================================================================
-
-  .size  _start, .-_start
