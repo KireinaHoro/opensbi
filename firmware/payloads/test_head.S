@@ -7,6 +7,8 @@
  *   Anup Patel <anup.patel@wdc.com>
  */
 
+#include "newlib.h"
+
 #include <sbi/riscv_encoding.h>
 #define __ASM_STR(x)	x
 
@@ -57,9 +59,16 @@ _start_warm:
 	csrw	CSR_STVEC, a3
 
 	/* Setup stack */
-	la	a3, _payload_end
-	li	a4, 0x2000
-	add	sp, a3, a4
+	la	sp, _stack_top
+  
+        /* Clear the bss segment */
+        la      a0, _bss_start
+        la      a2, _bss_end
+        sub     a2, a2, a0
+        li      a1, 0
+        call    memset
+      
+        call    __libc_init_array
 
 	/* Jump to C main */
 	la	a3, _boot_a0
@@ -67,6 +76,7 @@ _start_warm:
 	la	a3, _boot_a1
 	REG_L	a1, 0(a3)
 	call	test_main
+        tail    exit
 
 	/* We don't expect to reach here hence just hang */
 	j	_start_hang
@@ -86,3 +96,10 @@ _boot_a0:
 	RISCV_PTR	0
 _boot_a1:
 	RISCV_PTR	0
+
+
+#=========================================================================
+# crt0.S : Entry point for RISC-V user programs
+#=========================================================================
+
+  .size  _start, .-_start

@@ -6,51 +6,28 @@
  * Authors:
  *   Anup Patel <anup.patel@wdc.com>
  */
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
+#include <errno.h>
+#include <malloc.h>
 
-#include <sbi/sbi_ecall_interface.h>
+#include "common.h"
 
-#define SBI_ECALL(__num, __a0, __a1, __a2)                                    \
-	({                                                                    \
-		register unsigned long a0 asm("a0") = (unsigned long)(__a0);  \
-		register unsigned long a1 asm("a1") = (unsigned long)(__a1);  \
-		register unsigned long a2 asm("a2") = (unsigned long)(__a2);  \
-		register unsigned long a7 asm("a7") = (unsigned long)(__num); \
-		asm volatile("ecall"                                          \
-			     : "+r"(a0)                                       \
-			     : "r"(a1), "r"(a2), "r"(a7)                      \
-			     : "memory");                                     \
-		a0;                                                           \
-	})
-
-#define SBI_ECALL_0(__num) SBI_ECALL(__num, 0, 0, 0)
-#define SBI_ECALL_1(__num, __a0) SBI_ECALL(__num, __a0, 0, 0)
-#define SBI_ECALL_2(__num, __a0, __a1) SBI_ECALL(__num, __a0, __a1, 0)
-
-#define sbi_ecall_console_getc()  SBI_ECALL_0(SBI_EXT_0_1_CONSOLE_GETCHAR)
-#define sbi_ecall_console_putc(c) SBI_ECALL_1(SBI_EXT_0_1_CONSOLE_PUTCHAR, (c))
-
-static inline void sbi_ecall_console_puts(const char *str)
+int test_main(unsigned long a0, unsigned long a1)
 {
-	while (str && *str)
-		sbi_ecall_console_putc(*str++);
-}
+	printf("\nS-mode entry point\n");
 
-static inline char sbi_getc() {
-	char c;
-	while ((c = sbi_ecall_console_getc()) == 255);
-	return c;
-}
+	uint8_t *a = malloc(4096);
+	printf("malloc returned %p\n", a);
 
-#define wfi()                                             \
-	do {                                              \
-		__asm__ __volatile__("wfi" ::: "memory"); \
-	} while (0)
+	uint8_t *b = memalign(0x1000, 0x1000);
+	printf("memalign returned %p\n", b);
 
-void test_main(unsigned long a0, unsigned long a1)
-{
-	sbi_ecall_console_puts("\nS-mode entry point\n");
+	printf("\nTest printf again\n");
 
+	return 0;
 
-	while (1)
-		sbi_ecall_console_putc(sbi_getc());
+	matmul_test();
 }

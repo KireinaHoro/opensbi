@@ -9,7 +9,7 @@
 
 firmware-genflags-y =
 firmware-cppflags-y +=
-firmware-cflags-y +=
+firmware-cflags-y += -nostartfiles
 firmware-asflags-y +=
 firmware-ldflags-y +=
 

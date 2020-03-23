@@ -10,6 +10,9 @@
 OUTPUT_ARCH(riscv)
 ENTRY(_start)
 
+#define DDR_BASE 0x800000000
+#define DDR_SIZE 0x80000000
+
 SECTIONS
 {
 #ifdef FW_PAYLOAD_OFFSET
@@ -29,6 +32,7 @@ SECTIONS
 		PROVIDE(_text_start = .);
 		*(.entry)
 		*(.text)
+		*(.text.*)
 		. = ALIGN(8);
 		PROVIDE(_text_end = .);
 	}
@@ -79,9 +83,23 @@ SECTIONS
 		PROVIDE(_bss_end = .);
 	}
 
+	.sbss :
+	{
+		PROVIDE(_sbss_start = .);
+		*(.sbss)
+		*(.sbss.*)
+		. = ALIGN(8);
+		PROVIDE(_sbss_end = .);
+	}
+
 	/* End of the read-write data sections */
 
-	. = ALIGN(0x1000); /* Need this to create proper sections */
+	. = ALIGN(0x1000); /* page aligned */
+	PROVIDE(_heap_start = .);
 
-	PROVIDE(_payload_end = .);
+	. = DDR_BASE + DDR_SIZE - 0x20000;
+	PROVIDE(_stack_end = .);
+
+	. = DDR_BASE + DDR_SIZE;
+	PROVIDE(_stack_top = .);
 }
