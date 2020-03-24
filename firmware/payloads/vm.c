@@ -78,6 +78,10 @@ static pagetable_t pagetable;
 void vminit()
 {
 	pagetable = memalign(PGSIZE, PGSIZE);
+	if (!pagetable) {
+		perror("Failed to allocate page for pagetable");
+		exit(-1);
+	}
 	memset(pagetable, 0, PGSIZE);
 	printf("Creating pagetable at %p...\n", (void *)pagetable);
 

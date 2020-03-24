@@ -41,9 +41,9 @@ _start:
 	la	a3, _boot_a1
 	REG_S	a1, 0(a3)
 
-	/* Zero-out BSS */
+	/* Zero-out BSS & SBSS */
 	la	a4, _bss_start
-	la	a5, _bss_end
+	la	a5, _sbss_end
 _bss_zero:
 	REG_S	zero, (a4)
 	add	a4, a4, __SIZEOF_POINTER__
@@ -61,13 +61,7 @@ _start_warm:
 	/* Setup stack */
 	la	sp, _stack_top
   
-        /* Clear the bss segment */
-        la      a0, _bss_start
-        la      a2, _bss_end
-        sub     a2, a2, a0
-        li      a1, 0
-        call    memset
-      
+      	/* Call constructors */
         call    __libc_init_array
 
 	/* Jump to C main */
@@ -97,7 +91,10 @@ _boot_a0:
 _boot_a1:
 	RISCV_PTR	0
 
+	.align 3
+	.section .entry, "ax", %progbits
+	.globl _trap
 _trap:
-	li	sp, 0x840000000 /* random stack */
+	la	sp, _trap_stack
 	j	trap
 

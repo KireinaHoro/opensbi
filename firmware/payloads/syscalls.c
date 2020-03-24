@@ -82,6 +82,14 @@ intptr_t _sbrk(ptrdiff_t heap_incr)
 {
 	static intptr_t heap_end = (intptr_t)&_heap_start;
 
+#ifdef DEBUG_SBRK
+	sbi_ecall_console_puts("sbrk(");
+	sbi_ecall_console_printhex(heap_incr);
+	sbi_ecall_console_puts(") called, heap_end = ");
+	sbi_ecall_console_printhex(heap_end);
+	sbi_ecall_console_puts("\n");
+#endif
+
 	intptr_t prev_heap_end;
 	intptr_t new_heap_end;
 
