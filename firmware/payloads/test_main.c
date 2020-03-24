@@ -21,9 +21,9 @@ int test_main(unsigned long a0, unsigned long a1)
 
 	vminit();
 
-	printf("\nTest printf again\n");
-
-	return 0;
+	printf("Start Gemmini test\n");
 
 	matmul_test();
+
+	return 0;
 }

@@ -191,12 +191,17 @@ uint64_t read_cycles()
 	ROCC_INSTRUCTION_0_R_R(x, rs1, rs2, funct, 10, 11)
 
 // mvin and mvout
-#define gemmini_extended_mvin(dram_addr, spad_addr, cols, rows)           \
-	ROCC_INSTRUCTION_RS1_RS2(XCUSTOM_ACC, dram_addr,                  \
-				 ((uint64_t)(rows) << (ADDR_LEN + 16)) |  \
-					 ((uint64_t)(cols) << ADDR_LEN) | \
-					 (spad_addr),                     \
-				 k_MVIN)
+#define gemmini_extended_mvin(dram_addr, spad_addr, cols, rows)               \
+	{                                                                     \
+		printf("DRAM %p -> SPAD 0x%lx, cols=%ld rows=%ld\n",          \
+		       dram_addr, (uint64_t)(spad_addr), (uint64_t)(cols),    \
+		       (uint64_t)(rows));                                     \
+		ROCC_INSTRUCTION_RS1_RS2(                                     \
+			XCUSTOM_ACC, dram_addr,                               \
+			((uint64_t)(rows) << (ADDR_LEN + 16)) |               \
+				((uint64_t)(cols) << ADDR_LEN) | (spad_addr), \
+			k_MVIN);                                              \
+	}
 
 #define gemmini_block_mvin(dram_addr, spad_addr, len) \
 	gemmini_extended_mvin(dram_addr, spad_addr, (len)*DIM, DIM)
@@ -204,12 +209,18 @@ uint64_t read_cycles()
 #define gemmini_mvin(dram_addr, spad_addr) \
 	gemmini_extended_mvin(dram_addr, spad_addr, DIM, DIM)
 
-#define gemmini_extended_mvout(dram_addr, spad_addr, cols, rows)          \
-	ROCC_INSTRUCTION_RS1_RS2(XCUSTOM_ACC, dram_addr,                  \
-				 ((uint64_t)(rows) << (ADDR_LEN + 16)) |  \
-					 ((uint64_t)(cols) << ADDR_LEN) | \
-					 (uint64_t)(spad_addr),           \
-				 k_MVOUT)
+#define gemmini_extended_mvout(dram_addr, spad_addr, cols, rows)           \
+	{                                                                  \
+		printf("DRAM %p <- SPAD 0x%lx, cols=%ld rows=%ld\n",       \
+		       dram_addr, (uint64_t)(spad_addr), (uint64_t)(cols), \
+		       (uint64_t)(rows));                                  \
+		ROCC_INSTRUCTION_RS1_RS2(                                  \
+			XCUSTOM_ACC, dram_addr,                            \
+			((uint64_t)(rows) << (ADDR_LEN + 16)) |            \
+				((uint64_t)(cols) << ADDR_LEN) |           \
+				(uint64_t)(spad_addr),                     \
+			k_MVOUT);                                          \
+	}
 
 #define gemmini_mvout(dram_addr, spad_addr) \
 	gemmini_extended_mvout(dram_addr, spad_addr, DIM, DIM)
