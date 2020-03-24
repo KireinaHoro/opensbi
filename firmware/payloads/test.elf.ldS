@@ -94,11 +94,16 @@ SECTIONS
 
 	/* End of the read-write data sections */
 
-	. = ALIGN(0x1000); /* page aligned */
+	/* Heap page aligned */
+	. = ALIGN(0x1000);
 	PROVIDE(_heap_start = .);
 
-	. = DDR_BASE + DDR_SIZE - 0x20000;
+	/* trap and normal stack */
+	. = DDR_BASE + DDR_SIZE - 0x11000;
 	PROVIDE(_stack_end = .);
+
+	. += 0x1000;
+	PROVIDE(_trap_stack = .);
 
 	. = DDR_BASE + DDR_SIZE;
 	PROVIDE(_stack_top = .);
