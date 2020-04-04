@@ -19,11 +19,5 @@ int test_main(unsigned long a0, unsigned long a1)
 {
 	printf("\nS-mode entry point\n");
 
-	//vminit();
-
-	printf("Start Gemmini test\n");
-
-	test_tiled_os();
-
 	return 0;
 }

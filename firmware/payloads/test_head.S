@@ -61,8 +61,8 @@ _start_warm:
 	/* Setup stack */
 	la	sp, _stack_top
   
-      	/* Call constructors */
-        call    __libc_init_array
+	/* Call constructors */
+	call    __libc_init_array
 
 	/* Jump to C main */
 	la	a3, _boot_a0
@@ -70,7 +70,7 @@ _start_warm:
 	la	a3, _boot_a1
 	REG_L	a1, 0(a3)
 	call	test_main
-        tail    exit
+	tail    exit
 
 	/* We don't expect to reach here hence just hang */
 	j	_start_hang

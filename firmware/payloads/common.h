@@ -37,8 +37,6 @@ typedef uint64_t *pagetable_t; // 512 PTEs in a single page
 
 void sbi_ecall_console_puts(const char *str);
 
-void matmul_test();
-void test_tiled_os();
 void vminit();
 
 // supervisor address translation and protection;
