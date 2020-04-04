@@ -14,10 +14,19 @@
 #include <malloc.h>
 
 #include "common.h"
+#include "routines.h"
+
+#define MAXLINE 64
 
 int test_main(unsigned long a0, unsigned long a1)
 {
-	printf("\nS-mode entry point\n");
+	char buf[MAXLINE];
+	printf(INIT_MAGIC);
+
+	while (true) {
+		sbi_getline(buf, MAXLINE - 1);
+		printf("%s\n", buf);
+	}
 
 	return 0;
 }

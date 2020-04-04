@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stddef.h>
 
 #define DDR_BASE 0x800000000L
 #define DDR_SIZE 0x80000000L
@@ -62,3 +63,6 @@ static inline void sfence_vma()
 { \
 	printf("enter %s\n", __func__); \
 }
+
+#define INIT_MAGIC "monitor-initialize\n"
+#define EXIT_MAGIC "monitor-exit\n"
