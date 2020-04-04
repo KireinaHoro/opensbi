@@ -38,6 +38,7 @@ typedef uint64_t *pagetable_t; // 512 PTEs in a single page
 void sbi_ecall_console_puts(const char *str);
 
 void matmul_test();
+void test_tiled_os();
 void vminit();
 
 // supervisor address translation and protection;
@@ -58,3 +59,8 @@ static inline void sfence_vma()
 	do {                                              \
 		__asm__ __volatile__("wfi" ::: "memory"); \
 	} while (0)
+
+#define CALL_TRACE \
+{ \
+	printf("enter %s\n", __func__); \
+}

@@ -13,6 +13,8 @@ test-y += test_head.o
 test-y += test_main.o
 test-y += syscalls.o
 test-y += matmul.o
+test-y += gemmini.o
+test-y += tiled_matmul_os.o
 test-y += vm.o
 test-y += trap.o
 

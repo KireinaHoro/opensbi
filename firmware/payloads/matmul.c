@@ -7,13 +7,12 @@
 #include <stdlib.h>
 #include <math.h>
 #include "gemmini.h"
+#include "common.h"
 
 #define N (2)
 
-#define CALL_TRACE                               \
-	{                                        \
-		printf("%s called\n", __func__); \
-	}
+#define printf(...)
+#define printMatrix(...)
 
 static elem_t ZERO[DIM][DIM];
 
@@ -378,7 +377,7 @@ void test_ws()
 	}
 }
 
-int matmul_test()
+void matmul_test()
 {
 	CALL_TRACE
 
