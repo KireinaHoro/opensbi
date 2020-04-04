@@ -17,6 +17,10 @@ ifdef FW_TEXT_START
 firmware-genflags-y += -DFW_TEXT_START=$(FW_TEXT_START)
 endif
 
+ifdef FW_TVM_PAYLOAD_OFFSET
+firmware-genflags-y += -DFW_TVM_PAYLOAD_OFFSET=$(FW_TVM_PAYLOAD_OFFSET)
+endif
+
 firmware-bins-$(FW_DYNAMIC) += fw_dynamic.bin
 
 firmware-bins-$(FW_JUMP) += fw_jump.bin

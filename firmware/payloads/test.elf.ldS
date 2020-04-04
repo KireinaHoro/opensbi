@@ -94,9 +94,16 @@ SECTIONS
 
 	/* End of the read-write data sections */
 
-	/* Heap page aligned */
+	/* 128KiB heap, page aligned, for monitor */
 	. = ALIGN(0x1000);
 	PROVIDE(_heap_start = .);
+
+	. += 0x20000;
+	PROVIDE(_heap_end = .);
+
+	/* TVM generated code starts here */
+	. = FW_TEXT_START + FW_TVM_PAYLOAD_OFFSET;
+	PROVIDE(_tvm_start = .);
 
 	/* trap and normal stack */
 	. = DDR_BASE + DDR_SIZE - 0x11000;

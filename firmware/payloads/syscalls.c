@@ -76,7 +76,7 @@ void _exit(int n)
 }
 
 extern intptr_t _heap_start;
-extern intptr_t _stack_end;
+extern intptr_t _heap_end;
 
 intptr_t _sbrk(ptrdiff_t heap_incr)
 {
@@ -96,7 +96,7 @@ intptr_t _sbrk(ptrdiff_t heap_incr)
 	prev_heap_end = heap_end;
 	new_heap_end  = prev_heap_end + heap_incr;
 
-	if (new_heap_end >= (intptr_t)&_stack_end) {
+	if (new_heap_end >= (intptr_t)&_heap_end) {
 		errno = ENOMEM;
 		return -1;
 	}

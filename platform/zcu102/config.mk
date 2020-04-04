@@ -15,6 +15,8 @@ platform-ldflags-y =
 
 # Blobs to build
 FW_TEXT_START=0x800000000
+# TVM payload will be loaded at 1M offset
+FW_TVM_PAYLOAD_OFFSET=0x100000
 FW_DYNAMIC=n
 FW_JUMP=n
 FW_PAYLOAD=y
