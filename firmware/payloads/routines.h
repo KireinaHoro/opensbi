@@ -28,5 +28,6 @@
 #define sbi_ecall_console_putc(c) SBI_ECALL_1(SBI_EXT_0_1_CONSOLE_PUTCHAR, (c))
 
 void sbi_ecall_console_puts(const char *str);
+void sbi_ecall_console_printhex(uint64_t num);
 char sbi_getc();
 void sbi_getline(char *line, size_t len);

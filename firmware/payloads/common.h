@@ -36,8 +36,6 @@ typedef uint64_t pte_t;
 typedef uint64_t pde_t;
 typedef uint64_t *pagetable_t; // 512 PTEs in a single page
 
-void sbi_ecall_console_puts(const char *str);
-
 void vminit();
 
 // supervisor address translation and protection;
@@ -64,5 +62,10 @@ static inline void sfence_vma()
 	printf("enter %s\n", __func__); \
 }
 
+#define read_csr(reg) ({ unsigned long __tmp; \
+		__asm__ volatile ("csrr %0, " #reg : "=r"(__tmp)); \
+		__tmp; })
+
+// \r\n will actually be written; ARM side checks for \r\n instead of \n
 #define INIT_MAGIC "monitor-initialize\n"
 #define EXIT_MAGIC "monitor-exit\n"

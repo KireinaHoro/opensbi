@@ -7,7 +7,7 @@ void sbi_ecall_console_puts(const char *str)
 		sbi_ecall_console_putc(*str++);
 }
 
-static inline void sbi_ecall_console_printhex(uint64_t num)
+void sbi_ecall_console_printhex(uint64_t num)
 {
 	sbi_ecall_console_puts("0x");
 	for (int i = 15; i >= 0; --i) {
