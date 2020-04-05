@@ -1,5 +1,5 @@
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #define DDR_BASE 0x800000000L
 #define DDR_SIZE 0x80000000L
@@ -40,31 +40,30 @@ void vminit();
 
 // supervisor address translation and protection;
 // holds the address of the page table.
-static inline void w_satp(uint64 x)
-{
-	asm volatile("csrw satp, %0" : : "r"(x));
+static inline void w_satp(uint64 x) {
+  asm volatile("csrw satp, %0" : : "r"(x));
 }
 
 // flush the TLB.
-static inline void sfence_vma()
-{
-	// the zero, zero means flush all TLB entries.
-	asm volatile("sfence.vma zero, zero");
+static inline void sfence_vma() {
+  // the zero, zero means flush all TLB entries.
+  asm volatile("sfence.vma zero, zero");
 }
 
-#define wfi()                                             \
-	do {                                              \
-		__asm__ __volatile__("wfi" ::: "memory"); \
-	} while (0)
+#define wfi()                                                                  \
+  do {                                                                         \
+    __asm__ __volatile__("wfi" ::: "memory");                                  \
+  } while (0)
 
-#define CALL_TRACE \
-{ \
-	printf("enter %s\n", __func__); \
-}
+#define CALL_TRACE                                                             \
+  { printf("enter %s\n", __func__); }
 
-#define read_csr(reg) ({ unsigned long __tmp; \
-		__asm__ volatile ("csrr %0, " #reg : "=r"(__tmp)); \
-		__tmp; })
+#define read_csr(reg)                                                          \
+  ({                                                                           \
+    unsigned long __tmp;                                                       \
+    __asm__ volatile("csrr %0, " #reg : "=r"(__tmp));                          \
+    __tmp;                                                                     \
+  })
 
 // \r\n will actually be written; ARM side checks for \r\n instead of \n
 #define INIT_MAGIC "monitor-initialize\n"
