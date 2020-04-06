@@ -68,3 +68,6 @@ static inline void sfence_vma() {
 // \r\n will actually be written; ARM side checks for \r\n instead of \n
 #define INIT_MAGIC "monitor-initialize\n"
 #define EXIT_MAGIC "monitor-exit\n"
+#define FLUSH_MAGIC "monitor-flush\n"
+
+#define MAXLINE 64

@@ -16,11 +16,9 @@
 #include "common.h"
 #include "routines.h"
 
-#define MAXLINE 64
-
 int test_main(unsigned long a0, unsigned long a1) {
   char buf[MAXLINE];
-  printf(INIT_MAGIC);
+  sbi_ecall_console_puts(INIT_MAGIC);
 
   // read two integers as execute
   sbi_getline(buf, MAXLINE - 1);
