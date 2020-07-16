@@ -18,7 +18,7 @@ FW_TEXT_START=0x40000000
 FW_DYNAMIC=n
 FW_JUMP=n
 FW_PAYLOAD=y
-FW_PAYLOAD_PATH=$(platform_build_dir)/firmware/payloads/u-boot.bin
+#FW_PAYLOAD_PATH=$(platform_build_dir)/firmware/payloads/u-boot.bin
 # outside PMP0 zone
 FW_PAYLOAD_OFFSET=0x20000
 FW_PAYLOAD_FDT=edgeboard.dtb

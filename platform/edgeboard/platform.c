@@ -32,7 +32,7 @@
 #define EDGEBOARD_PLIC_NUM_SOURCES			3
 #define EDGEBOARD_PLIC_NUM_PRIORITIES		7
 
-#define EDGEBOARD_UART0_ADDR			0xe0001000  // shift 0x1000 from Vivado address map
+#define EDGEBOARD_UART0_ADDR			0xe0011000  // shift 0x1000 from Vivado address map
 #define EDGEBOARD_UART_BAUDRATE			115200
 
 #ifndef EDGEBOARD_ENABLED_HART_MASK
