@@ -16,12 +16,12 @@
 #include <sbi/sbi_platform.h>
 #include <sbi/riscv_io.h>
 #include <sbi_utils/irqchip/plic.h>
-#include <sbi_utils/serial/uart8250.h>
+#include <sbi_utils/serial/sifive-uart.h>
 #include <sbi_utils/sys/clint.h>
 
 /* clang-format off */
 
-#define EDGEBOARD_HART_COUNT			1
+#define EDGEBOARD_HART_COUNT			2
 #define EDGEBOARD_HART_STACK_SIZE			8192
 
 #define EDGEBOARD_SYS_CLK				100000000
@@ -29,14 +29,14 @@
 #define EDGEBOARD_CLINT_ADDR			0x2000000
 
 #define EDGEBOARD_PLIC_ADDR				0xc000000
-#define EDGEBOARD_PLIC_NUM_SOURCES			3
+#define EDGEBOARD_PLIC_NUM_SOURCES			12
 #define EDGEBOARD_PLIC_NUM_PRIORITIES		7
 
-#define EDGEBOARD_UART0_ADDR			0xe0011000  // shift 0x1000 from Vivado address map
+#define EDGEBOARD_UART0_ADDR			0x10010000
 #define EDGEBOARD_UART_BAUDRATE			115200
 
 #ifndef EDGEBOARD_ENABLED_HART_MASK
-#define EDGEBOARD_ENABLED_HART_MASK	(1 << 0)
+#define EDGEBOARD_ENABLED_HART_MASK	0b11
 #endif
 
 #define EDGEBOARD_HARITD_DISABLED			~(EDGEBOARD_ENABLED_HART_MASK)
@@ -79,8 +79,8 @@ static int edgeboard_console_init(void)
 {
 	unsigned long peri_in_freq = EDGEBOARD_SYS_CLK;
 
-	return uart8250_init(EDGEBOARD_UART0_ADDR, peri_in_freq,
-				EDGEBOARD_UART_BAUDRATE, 2, 4);
+	return sifive_uart_init(EDGEBOARD_UART0_ADDR, peri_in_freq,
+				EDGEBOARD_UART_BAUDRATE);
 }
 
 static int edgeboard_irqchip_init(bool cold_boot)
@@ -136,8 +136,8 @@ const struct sbi_platform_operations platform_ops = {
 	.pmp_region_count	= edgeboard_pmp_region_count,
 	.pmp_region_info	= edgeboard_pmp_region_info,
 	.final_init		= edgeboard_final_init,
-	.console_putc		= uart8250_putc,
-	.console_getc		= uart8250_getc,
+	.console_putc		= sifive_uart_putc,
+	.console_getc		= sifive_uart_getc,
 	.console_init		= edgeboard_console_init,
 	.irqchip_init		= edgeboard_irqchip_init,
 	.ipi_send		= clint_ipi_send,

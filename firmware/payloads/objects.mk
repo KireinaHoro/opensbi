@@ -32,3 +32,8 @@ kernel_root=$(src_dir)/../../linux
 kernel_bin=$(platform_build_dir)/firmware/payloads/kernel-flat.bin
 $(kernel_bin):
 	cp $(kernel_root)/arch/riscv/boot/Image $@
+
+sel4_bin=$(platform_build_dir)/firmware/payloads/elfloader.bin
+elfloader_elf=$(src_dir)/firmware/payloads/elfloader
+$(sel4_bin): $(elfloader_elf)
+	$(OBJCOPY) -S -O binary $< $@
