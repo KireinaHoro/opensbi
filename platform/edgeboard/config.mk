@@ -18,8 +18,10 @@ FW_TEXT_START=0x40000000
 FW_DYNAMIC=n
 FW_JUMP=n
 FW_PAYLOAD=y
-FW_PAYLOAD_PATH=$(sel4_bin)
+#FW_PAYLOAD_PATH=$(sel4_bin)
 #FW_PAYLOAD_PATH=$(platform_build_dir)/firmware/payloads/u-boot.bin
 # outside PMP0 zone
 FW_PAYLOAD_OFFSET=0x400000
 FW_PAYLOAD_FDT=edgeboard.dtb
+
+PLATFORM_RISCV_ABI=lp64d
