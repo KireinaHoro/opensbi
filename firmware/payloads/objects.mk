@@ -13,6 +13,8 @@ firmware-bins-$(FW_PAYLOAD) += payloads/kernel-flat.bin
 
 test-y += test_head.o
 test-y += test_main.o
+test-y += support.o
+test-y += nvdla.o
 
 %/test.o: $(foreach obj,$(test-y),%/$(obj))
 	$(call merge_objs,$@,$^)
