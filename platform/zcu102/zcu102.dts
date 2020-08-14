@@ -46,17 +46,15 @@
 		device_type = "memory";
 		reg = <0x0 0x80000000 0x0 0x20000000>;
 	};
-    /*
 	reserved-memory {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
 		DLA: reserved@870000000 {
 			no-map;
-			reg = <0x8 0x70000000 0x0 0x10000000>;
+			reg = <0x0 0x90000000 0x0 0x10000000>;
 		};
 	};
-    */
 	L13: soc {
 		#address-cells = <2>;
 		#size-cells = <2>;
@@ -89,7 +87,6 @@
 			riscv,max-priority = <3>;
 			riscv,ndev = <3>;
 		};
-        /*
 		L10: nvdla@10040000 {
 			compatible = "nvidia,nv_small";
 			interrupt-parent = <&L2>;
@@ -98,7 +95,6 @@
 			reg-names = "control";
 			memory-region = <&DLA>;
 		};
-        */
 		L8: serial@10010000 {
 			compatible = "sifive,uart0";
 			interrupt-parent = <&L2>;
@@ -124,7 +120,7 @@
 	};
 
 	chosen {
-		bootargs = "earlycon=sbi console=ttySIF0 nokaslr";
-		stdout-path = "/soc/serial@10011000:115200";
+		bootargs = "earlycon=sbi console=ttySIF0";
+		stdout-path = "/soc/serial@10010000:115200";
 	};
 };

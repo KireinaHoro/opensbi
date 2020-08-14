@@ -167,6 +167,9 @@ CFLAGS		+=	$(GENFLAGS)
 CFLAGS		+=	$(platform-cflags-y)
 CFLAGS		+=	$(firmware-cflags-y)
 CFLAGS		+=	-fno-pie -no-pie
+CFLAGS		+=  -Wno-error=unused-const-variable
+CFLAGS		+=  -D__FILENAME__=\"$(notdir $<)\"
+
 
 CPPFLAGS	+=	$(GENFLAGS)
 CPPFLAGS	+=	$(platform-cppflags-y)

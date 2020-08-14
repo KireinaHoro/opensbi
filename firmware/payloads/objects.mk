@@ -9,12 +9,12 @@
 
 firmware-bins-$(FW_PAYLOAD) += payloads/test.bin
 #firmware-bins-$(FW_PAYLOAD) += payloads/u-boot.bin
-firmware-bins-$(FW_PAYLOAD) += payloads/kernel-flat.bin
 
 test-y += test_head.o
 test-y += test_main.o
 test-y += support.o
 test-y += nvdla.o
+test-y += sdp.o
 
 %/test.o: $(foreach obj,$(test-y),%/$(obj))
 	$(call merge_objs,$@,$^)
@@ -31,9 +31,7 @@ test-y += nvdla.o
 #	cp $(u-boot_root)/u-boot.bin $@
 
 kernel_root=$(src_dir)/../../linux
-kernel_bin=$(platform_build_dir)/firmware/payloads/kernel-flat.bin
-$(kernel_bin):
-	cp $(kernel_root)/arch/riscv/boot/Image $@
+kernel_bin=$(src_dir)/firmware/payloads/Image
 
 sel4_bin=$(platform_build_dir)/firmware/payloads/elfloader.bin
 elfloader_elf=$(src_dir)/firmware/payloads/elfloader

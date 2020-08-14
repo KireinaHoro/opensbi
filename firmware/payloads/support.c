@@ -1,4 +1,5 @@
 #include "common.h"
+#include "nvdla.h"
 
 irq_handler_t handlers[] = {NULL, NULL, &handle_dla};
 

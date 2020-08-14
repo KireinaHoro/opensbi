@@ -53,17 +53,11 @@
 #define UART1_IRQ 2
 #define NVDLA_IRQ 3
 
-// NVDLA
-#define NVDLA_BASE 0x10040000
-
 void delay();
 uint64_t cpuid();
-
-void enable_dla();
-void handle_dla();
 
 typedef void (*irq_handler_t)();
 void enable_irq(int *irqs, size_t count);
 
 #define TRACE(x)                                                               \
-    { printf("%s(%s:%d) %s\n", __func__, __FILE__, __LINE__, (x)); }
+    { printf("%s(%s:%d) %s\n", __func__, __FILENAME__, __LINE__, (x)); }

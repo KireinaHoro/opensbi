@@ -19,7 +19,7 @@ FW_DYNAMIC=n
 FW_JUMP=n
 FW_PAYLOAD=y
 #FW_PAYLOAD_PATH=$(platform_build_dir)/firmware/payloads/u-boot.bin
-#FW_PAYLOAD_PATH=$(platform_build_dir)/firmware/payloads/kernel-flat.bin
+FW_PAYLOAD_PATH=$(kernel_bin)
 # outside PMP0 zone
 FW_PAYLOAD_OFFSET=0x200000
 FW_PAYLOAD_FDT=zcu102.dtb

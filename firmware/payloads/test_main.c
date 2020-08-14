@@ -8,6 +8,7 @@
  */
 
 #include "common.h"
+#include "nvdla.h"
 
 int irqs[] = {NVDLA_IRQ};
 
