@@ -12,6 +12,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define FREQ (100*1000*1000)
+#define DELAY_SECONDS 3
+#define DELAY_TICKS (DELAY_SECONDS * FREQ)
+
 void delay() {
     for (int i = 0; i < 100*1000*1000; ++i) {
         asm volatile("nop");
@@ -25,7 +29,7 @@ void print_pwm_counters() {
 }
 
 void handle_pwm_irq() {
-    printf("PWM Timer interrupt\n");
+    printf("PWM Timer interrupt - firing every %d seconds\n", DELAY_SECONDS);
 
     // clear counter
     *(uint32_t*)(PWM_COUNT) = 0;
@@ -74,7 +78,7 @@ void test_main(unsigned long a0, unsigned long a1)
     *(uint32_t*)PLIC_SPRIORITY(hart) = 0;
 
     printf("Initializing PWM...\n");
-    *(uint32_t*)(PWM_CMP0) = 30517; // 10^9 (10s) / 2^15
+    *(uint32_t*)(PWM_CMP0) = DELAY_TICKS >> 15; // ticks / 2^15
     *(uint32_t*)(PWM_CMP1) = 0xffff; // disabled
     *(uint32_t*)(PWM_CMP2) = 0xffff; // disabled
     *(uint32_t*)(PWM_CMP3) = 0xffff; // disabled
@@ -89,7 +93,7 @@ void test_main(unsigned long a0, unsigned long a1)
 
     while (true) {
         print_pwm_counters();
-        delay();
+        wfi();
     }
 
     exit(0);
