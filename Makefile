@@ -170,6 +170,9 @@ CFLAGS		+=	-fno-pie -no-pie
 CFLAGS		+=  -Wno-error=unused-const-variable
 CFLAGS		+=  -D__FILENAME__=\"$(notdir $<)\"
 
+ifdef VERILATOR
+	CFLAGS += -DVERILATOR
+endif
 
 CPPFLAGS	+=	$(GENFLAGS)
 CPPFLAGS	+=	$(platform-cppflags-y)
