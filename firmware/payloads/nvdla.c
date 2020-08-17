@@ -29,19 +29,19 @@ void enable_dla() {
     uint32_t ver = glb_reg_read(S_NVDLA_HW_VERSION);
     printf("NVDLA Version %u\n", ver);
 
-    //dla_sdp_program();
-    intr_test();
+    dla_sdp_program();
+    //intr_test();
 }
 
 void reg_write(uint32_t addr, uint32_t reg) {
+    printf(">>> write %#x <- %#x\n", addr, reg);
     uint32_t *a = (uint32_t *)NVDLA_BASE + addr;
-    printf(">>> write %p <- %#x\n", a, reg);
     *a = reg;
 }
 
 uint32_t reg_read(uint32_t addr) {
     uint32_t *a = (uint32_t *)NVDLA_BASE + addr;
-    printf(">>> read %p", a);
+    printf(">>> read  %#x", addr);
     fflush(stdout);
     uint32_t reg = *a;
     printf(" -> %#x\n", reg);

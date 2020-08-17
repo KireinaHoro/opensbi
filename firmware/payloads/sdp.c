@@ -156,10 +156,12 @@ void processor_sdp_program(uint64_t src_addr, uint64_t dst_addr, uint32_t batch,
     if (src_addr == 0) {
         TRACE("input fly-by")
     } else {
+        TRACE("input from RAM")
         CHECK_ALIGN(src_addr, atom_size);
     }
 
     if (out_dma_ena) {
+        TRACE("output to RAM")
         CHECK_ALIGN(dst_addr, atom_size);
     } else {
         TRACE("output fly-by")
@@ -198,6 +200,8 @@ void processor_sdp_program(uint64_t src_addr, uint64_t dst_addr, uint32_t batch,
 
     // rdma is needed?
     if (!fly) {
+        TRACE("enabling RDMA")
+
         sdp_rdma_reg_write(D_DATA_CUBE_WIDTH, src_w - 1);
         sdp_rdma_reg_write(D_DATA_CUBE_HEIGHT, src_h - 1);
         sdp_rdma_reg_write(D_DATA_CUBE_CHANNEL, src_c - 1);
@@ -307,14 +311,18 @@ void dla_sdp_program() {
     memcpy((void*)src_addr, test_string, len);
     memset((void*)dst_addr, 0, len);
 
-    dla_enable_intr(MASK(GLB_S_INTR_MASK_0, SDP_DONE_MASK1) |
-                    MASK(GLB_S_INTR_MASK_0, SDP_DONE_MASK0));
-
     // set producer to 0 - we don't do interleave
     dla_sdp_set_producer(0, 0);
 
+    // enable interrupt
+    dla_enable_intr(MASK(GLB_S_INTR_MASK_0, SDP_DONE_MASK1) |
+                    MASK(GLB_S_INTR_MASK_0, SDP_DONE_MASK0));
+
     // program sdp
     processor_sdp_program(src_addr, dst_addr, batch, w, h, c, ls, ss, bs);
+
+    // set producer to 0 - we don't do interleave
+    dla_sdp_set_producer(0, 0);
 
     // enable all units
     dla_sdp_enable(src_addr != 0);
