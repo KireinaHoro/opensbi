@@ -34,14 +34,14 @@ void enable_dla() {
 }
 
 void reg_write(uint32_t addr, uint32_t reg) {
-    printf(">>> write %#x <- %#x\n", addr, reg);
-    uint32_t *a = (uint32_t *)NVDLA_BASE + addr;
+    uint32_t *a = (uint32_t *)(NVDLA_BASE + addr);
+    printf(">>> write %p <- %#x\n", a, reg);
     *a = reg;
 }
 
 uint32_t reg_read(uint32_t addr) {
-    uint32_t *a = (uint32_t *)NVDLA_BASE + addr;
-    printf(">>> read  %#x", addr);
+    uint32_t *a = (uint32_t *)(NVDLA_BASE + addr);
+    printf(">>> read  %p", a);
     fflush(stdout);
     uint32_t reg = *a;
     printf(" -> %#x\n", reg);
