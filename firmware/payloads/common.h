@@ -58,6 +58,7 @@ uint64_t cpuid();
 
 typedef void (*irq_handler_t)();
 void enable_irq(int *irqs, size_t count);
+void hexdump(const void* data, size_t size);
 
 #define TRACE(x)                                                               \
     { printf("%s(%s:%d) %s\n", __func__, __FILENAME__, __LINE__, (x)); }
