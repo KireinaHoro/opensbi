@@ -308,8 +308,12 @@ void dla_sdp_program() {
     uint32_t bs = batch;
     assert(len == batch * w * h * c);
 
+    // set marker bytes
+    memset((void*)dst_addr, 0xcc, DUMP_SIZE);
+    memset((void*)src_addr, 0xdd, DUMP_SIZE);
+    
+    // copy src string
     memcpy((void*)src_addr, test_string, len);
-    memset((void*)dst_addr, 0, len);
 
     // set producer to 0 - we don't do interleave
     dla_sdp_set_producer(0, 0);

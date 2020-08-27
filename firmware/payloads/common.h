@@ -62,3 +62,5 @@ void hexdump(const void* data, size_t size);
 
 #define TRACE(x)                                                               \
     { printf("%s(%s:%d) %s\n", __func__, __FILENAME__, __LINE__, (x)); }
+
+#define DUMP_SIZE 128

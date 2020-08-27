@@ -10,8 +10,11 @@ void handle_dla() {
     char *src_addr = (char *)SRC_ADDR;
     char *dst_addr = (char *)DST_ADDR;
 
-    printf("Source string: %s\n", src_addr);
-    printf("Destination string: %s\n", dst_addr);
+    printf("Source memory @ %p:\n", src_addr);
+    hexdump(src_addr, DUMP_SIZE);
+
+    printf("Destination memory @ %p:\n", dst_addr);
+    hexdump(dst_addr, DUMP_SIZE);
 }
 
 void intr_test() {
