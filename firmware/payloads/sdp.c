@@ -300,13 +300,12 @@ void dla_sdp_program() {
     printf("Moving test string from %#lx to %#lx...\n", src_addr, dst_addr);
 
     uint32_t batch = 1;
-    uint32_t w = 4;
-    uint32_t h = 4;
-    uint32_t c = 4;
+    uint32_t w = 16;
+    uint32_t h = 1;
+    uint32_t c = 1;
     uint32_t ls = w;
     uint32_t ss = c;
     uint32_t bs = batch;
-    assert(len == batch * w * h * c);
 
     // set marker bytes
     memset((void*)dst_addr, 0xcc, DUMP_SIZE);
