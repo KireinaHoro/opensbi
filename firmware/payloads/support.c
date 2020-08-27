@@ -1,7 +1,7 @@
 #include "common.h"
 #include "nvdla.h"
 
-irq_handler_t handlers[] = {NULL, NULL, &handle_dla};
+irq_handler_t handlers[] = {NULL /* 0 is unspecified */, NULL, NULL, &handle_dla};
 
 void delay() {
     for (int i = 0; i < 100 * 1000 * 1000; ++i) {
@@ -48,6 +48,9 @@ uint64_t cpuid() { return r_tp(); }
 
 // trap handler for illegal insn and intr
 void trap_handler() {
+    // disable interrupt to avoid reentrance
+    intr_off();
+
     uint64_t sepc = r_sepc();
     uint64_t scause = r_scause();
 
@@ -84,6 +87,9 @@ void trap_handler() {
 
         printf("Resuming...\n");
     }
+
+    // re-enable interrupt
+    intr_on();
 }
 
 void enable_irq(int *irqs, size_t count) {

@@ -7,6 +7,63 @@
 void handle_dla() {
     TRACE("irq") 
 
+	uint32_t mask;
+	uint32_t reg;
+
+	mask = glb_reg_read(S_INTR_MASK);
+	reg = glb_reg_read(S_INTR_STATUS);
+
+    printf("mask=%#x reg=%#x\n", mask, reg);
+
+	if (reg & MASK(GLB_S_INTR_STATUS_0, CACC_DONE_STATUS0)) {
+        TRACE("cacc status0")
+	}
+	if (reg & MASK(GLB_S_INTR_STATUS_0, CACC_DONE_STATUS1)) {
+        TRACE("cacc status1")
+	}
+	if (reg & MASK(GLB_S_INTR_STATUS_0, SDP_DONE_STATUS0)) {
+        TRACE("sdp status0")
+	}
+	if (reg & MASK(GLB_S_INTR_STATUS_0, SDP_DONE_STATUS1)) {
+        TRACE("sdp status1")
+	}
+	if (reg & MASK(GLB_S_INTR_STATUS_0, CDP_DONE_STATUS0)) {
+        TRACE("cdp status0")
+	}
+	if (reg & MASK(GLB_S_INTR_STATUS_0, CDP_DONE_STATUS1)) {
+        TRACE("cdp status1")
+	}
+	if (reg & MASK(GLB_S_INTR_STATUS_0, RUBIK_DONE_STATUS0)) {
+        TRACE("rubik status0")
+	}
+	if (reg & MASK(GLB_S_INTR_STATUS_0, RUBIK_DONE_STATUS1)) {
+        TRACE("rubik status1")
+	}
+	if (reg & MASK(GLB_S_INTR_STATUS_0, PDP_DONE_STATUS0)) {
+        TRACE("pdp status0")
+	}
+	if (reg & MASK(GLB_S_INTR_STATUS_0, PDP_DONE_STATUS1)) {
+        TRACE("pdp status1")
+	}
+	if (reg & MASK(GLB_S_INTR_STATUS_0, BDMA_DONE_STATUS0)) {
+        TRACE("bdma status0")
+	}
+	if (reg & MASK(GLB_S_INTR_STATUS_0, BDMA_DONE_STATUS1)) {
+        TRACE("bdma status1")
+	}
+	if (reg & MASK(GLB_S_INTR_STATUS_0, CDMA_DAT_DONE_STATUS0)) {
+        TRACE("cdma_dat status0")
+	}
+	if (reg & MASK(GLB_S_INTR_STATUS_0, CDMA_DAT_DONE_STATUS1)) {
+        TRACE("cdma_dat status1")
+	}
+	if (reg & MASK(GLB_S_INTR_STATUS_0, CDMA_WT_DONE_STATUS0)) {
+        TRACE("cdma_wt status0")
+	}
+	if (reg & MASK(GLB_S_INTR_STATUS_0, CDMA_WT_DONE_STATUS1)) {
+        TRACE("cdma_wt status1")
+	}
+
     char *src_addr = (char *)SRC_ADDR;
     char *dst_addr = (char *)DST_ADDR;
 
@@ -15,6 +72,15 @@ void handle_dla() {
 
     printf("Destination memory @ %p:\n", dst_addr);
     hexdump(dst_addr, DUMP_SIZE);
+
+    printf("Clearing interrupt...\n");
+
+    glb_reg_write(S_INTR_STATUS, reg);
+
+    mask = glb_reg_read(S_INTR_MASK);
+    reg = glb_reg_read(S_INTR_STATUS);
+
+    printf("mask=%#x reg=%#x\n", mask, reg);
 }
 
 void intr_test() {
