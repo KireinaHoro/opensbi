@@ -263,7 +263,7 @@ void processor_sdp_program(uint64_t src_addr, uint64_t dst_addr, uint32_t batch,
     // sdp configuration
     reg = (map_fly[fly]
            << SHIFT(SDP_D_FEATURE_MODE_CFG_0, FLYING_MODE)) |
-          (map_dst[out_dma_ena]
+          (map_dst[!out_dma_ena]
            << SHIFT(SDP_D_FEATURE_MODE_CFG_0, OUTPUT_DST)) |
           (map_wg[conv_mode]
            << SHIFT(SDP_D_FEATURE_MODE_CFG_0, WINOGRAD)) |
