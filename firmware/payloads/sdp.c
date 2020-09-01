@@ -1,7 +1,7 @@
 #include "common.h"
 #include "dla_regs.h"
-#include "opendla_small.h"
 #include "nvdla.h"
+#include "opendla_small.h"
 
 #include <stdbool.h>
 #include <string.h>
@@ -146,7 +146,10 @@ void dla_sdp_enable(bool is_rdma_needed) {
     TRACE("exit")
 }
 
-void processor_sdp_program(uint64_t src_addr, uint64_t dst_addr, uint32_t batch, uint32_t src_w, uint32_t src_h, uint32_t src_c, uint32_t line_stride, uint32_t surf_stride, uint32_t batch_stride) {
+void processor_sdp_program(uint64_t src_addr, uint64_t dst_addr, uint32_t batch,
+                           uint32_t src_w, uint32_t src_h, uint32_t src_c,
+                           uint32_t line_stride, uint32_t surf_stride,
+                           uint32_t batch_stride) {
     TRACE("enter")
 
     uint32_t reg, high, low;
@@ -167,11 +170,11 @@ void processor_sdp_program(uint64_t src_addr, uint64_t dst_addr, uint32_t batch,
         TRACE("output fly-by")
     }
 
-    uint32_t conv_mode = 0; // no winograd
+    uint32_t conv_mode = 0;     // no winograd
     uint32_t src_precision = 0; // int8
     uint32_t dst_precision = 0; // int8
-    uint32_t mcif = 0; // MC instead of CV (no secondary SRAM IF)
-    uint32_t bypass = 0; // bypass
+    uint32_t mcif = 0;          // MC instead of CV (no secondary SRAM IF)
+    uint32_t bypass = 0;        // bypass
 
     // clear old rdma state (?)
     reg = (map_fly[0] << SHIFT(SDP_RDMA_D_FEATURE_MODE_CFG_0, FLYING_MODE));
@@ -185,17 +188,16 @@ void processor_sdp_program(uint64_t src_addr, uint64_t dst_addr, uint32_t batch,
     sdp_rdma_reg_write(D_ERDMA_CFG, reg);
 
     // sdp rdma configuration
-    reg = (map_fly[fly] << SHIFT(SDP_RDMA_D_FEATURE_MODE_CFG_0, FLYING_MODE)) |
-          (map_wg[conv_mode]
-           << SHIFT(SDP_RDMA_D_FEATURE_MODE_CFG_0, WINOGRAD)) |
-          (map_precision[src_precision]
-           << SHIFT(SDP_RDMA_D_FEATURE_MODE_CFG_0, IN_PRECISION)) |
-          (map_precision[dst_precision]
-           << SHIFT(SDP_RDMA_D_FEATURE_MODE_CFG_0, OUT_PRECISION)) |
-          (map_proc_precision[dst_precision][src_precision]
-           << SHIFT(SDP_RDMA_D_FEATURE_MODE_CFG_0, PROC_PRECISION)) |
-          ((batch - 1)
-           << SHIFT(SDP_RDMA_D_FEATURE_MODE_CFG_0, BATCH_NUMBER));
+    reg =
+        (map_fly[fly] << SHIFT(SDP_RDMA_D_FEATURE_MODE_CFG_0, FLYING_MODE)) |
+        (map_wg[conv_mode] << SHIFT(SDP_RDMA_D_FEATURE_MODE_CFG_0, WINOGRAD)) |
+        (map_precision[src_precision]
+         << SHIFT(SDP_RDMA_D_FEATURE_MODE_CFG_0, IN_PRECISION)) |
+        (map_precision[dst_precision]
+         << SHIFT(SDP_RDMA_D_FEATURE_MODE_CFG_0, OUT_PRECISION)) |
+        (map_proc_precision[dst_precision][src_precision]
+         << SHIFT(SDP_RDMA_D_FEATURE_MODE_CFG_0, PROC_PRECISION)) |
+        ((batch - 1) << SHIFT(SDP_RDMA_D_FEATURE_MODE_CFG_0, BATCH_NUMBER));
     sdp_rdma_reg_write(D_FEATURE_MODE_CFG, reg);
 
     // rdma is needed?
@@ -216,18 +218,15 @@ void processor_sdp_program(uint64_t src_addr, uint64_t dst_addr, uint32_t batch,
         sdp_rdma_reg_write(D_SRC_DMA_CFG, map_ram_type[mcif]);
 
         // x1 dma is disabled
-        reg = (map_ena[0]
-               << SHIFT(SDP_RDMA_D_BRDMA_CFG_0, BRDMA_DISABLE));
+        reg = (map_ena[0] << SHIFT(SDP_RDMA_D_BRDMA_CFG_0, BRDMA_DISABLE));
         sdp_rdma_reg_write(D_BRDMA_CFG, reg);
 
         // x2 dma is disabled
-        reg = (map_ena[0]
-               << SHIFT(SDP_RDMA_D_NRDMA_CFG_0, NRDMA_DISABLE));
+        reg = (map_ena[0] << SHIFT(SDP_RDMA_D_NRDMA_CFG_0, NRDMA_DISABLE));
         sdp_rdma_reg_write(D_NRDMA_CFG, reg);
 
         // y dma is disabled
-        reg = (map_ena[0]
-               << SHIFT(SDP_RDMA_D_ERDMA_CFG_0, ERDMA_DISABLE));
+        reg = (map_ena[0] << SHIFT(SDP_RDMA_D_ERDMA_CFG_0, ERDMA_DISABLE));
         sdp_rdma_reg_write(D_ERDMA_CFG, reg);
     }
 
@@ -246,29 +245,23 @@ void processor_sdp_program(uint64_t src_addr, uint64_t dst_addr, uint32_t batch,
     }
 
     // BS (x1) - bypassed
-    reg =
-        (map_bypass[bypass] << SHIFT(SDP_D_DP_BS_CFG_0, BS_BYPASS));
+    reg = (map_bypass[bypass] << SHIFT(SDP_D_DP_BS_CFG_0, BS_BYPASS));
     sdp_reg_write(D_DP_BS_CFG, reg);
 
     // BN (x2) - bypassed
-    reg =
-        (map_bypass[bypass] << SHIFT(SDP_D_DP_BN_CFG_0, BN_BYPASS));
+    reg = (map_bypass[bypass] << SHIFT(SDP_D_DP_BN_CFG_0, BN_BYPASS));
     sdp_reg_write(D_DP_BN_CFG, reg);
 
     // EW (y) - bypassed
-    reg =
-        (map_bypass[bypass] << SHIFT(SDP_D_DP_EW_CFG_0, EW_BYPASS));
+    reg = (map_bypass[bypass] << SHIFT(SDP_D_DP_EW_CFG_0, EW_BYPASS));
     sdp_reg_write(D_DP_EW_CFG, reg);
 
     // sdp configuration
-    reg = (map_fly[fly]
-           << SHIFT(SDP_D_FEATURE_MODE_CFG_0, FLYING_MODE)) |
-          (map_dst[!out_dma_ena]
-           << SHIFT(SDP_D_FEATURE_MODE_CFG_0, OUTPUT_DST)) |
-          (map_wg[conv_mode]
-           << SHIFT(SDP_D_FEATURE_MODE_CFG_0, WINOGRAD)) |
-          ((batch - 1)
-           << SHIFT(SDP_D_FEATURE_MODE_CFG_0, BATCH_NUMBER));
+    reg =
+        (map_fly[fly] << SHIFT(SDP_D_FEATURE_MODE_CFG_0, FLYING_MODE)) |
+        (map_dst[!out_dma_ena] << SHIFT(SDP_D_FEATURE_MODE_CFG_0, OUTPUT_DST)) |
+        (map_wg[conv_mode] << SHIFT(SDP_D_FEATURE_MODE_CFG_0, WINOGRAD)) |
+        ((batch - 1) << SHIFT(SDP_D_FEATURE_MODE_CFG_0, BATCH_NUMBER));
     sdp_reg_write(D_FEATURE_MODE_CFG, reg);
     sdp_reg_write(D_DST_DMA_CFG, map_ram_type[mcif]);
     if (batch > 1)
@@ -288,7 +281,8 @@ void processor_sdp_program(uint64_t src_addr, uint64_t dst_addr, uint32_t batch,
     TRACE("exit")
 }
 
-const char *test_string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do";
+const char *test_string =
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do";
 
 void dla_sdp_program() {
     TRACE("SDP data movement test")
@@ -296,14 +290,14 @@ void dla_sdp_program() {
     uint64_t src_addr = SRC_ADDR;
     uint64_t dst_addr = DST_ADDR;
     size_t len = strlen(test_string) + 1;
-    
+
     printf("Moving test string from %#lx to %#lx...\n", src_addr, dst_addr);
 
     uint32_t batch = 1;
-    uint32_t w = 16;
+    uint32_t w = 2;
     uint32_t h = 1;
     // channel are in units of atoms
-    uint32_t c = 1 * atom_size;
+    uint32_t c = 2 * atom_size;
 
     // packed: need to multiply by atom size
     uint32_t ls = w * atom_size;
@@ -311,11 +305,11 @@ void dla_sdp_program() {
     uint32_t bs = batch;
 
     // set marker bytes
-    memset((void*)dst_addr, 0xcc, DUMP_SIZE);
-    memset((void*)src_addr, 0xdd, DUMP_SIZE);
-    
+    memset((void *)dst_addr, 0xcc, DUMP_SIZE);
+    memset((void *)src_addr, 0xdd, DUMP_SIZE);
+
     // copy src string
-    memcpy((void*)src_addr, test_string, len);
+    memcpy((void *)src_addr, test_string, len);
 
     // set producer to 0 - we don't do interleave
     dla_sdp_set_producer(0, 0);

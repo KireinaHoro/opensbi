@@ -18,7 +18,7 @@ void dla_enable_intr(uint32_t mask);
 #define SRC_ADDR 0x90010000L
 #define DST_ADDR 0x90020000L
 
-#define CHECK_ALIGN(val, align)      assert((val&(align-1)) == 0)
+#define CHECK_ALIGN(val, align) assert((val & (align - 1)) == 0)
 #define BITS(num, range) ((((0xFFFFFFFF >> (31 - (1 ? range))) & \
                             (0xFFFFFFFF << (0 ? range))) & num) >> \
                                         (0 ? range))
