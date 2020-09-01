@@ -15,6 +15,7 @@ test-y += test_main.o
 test-y += support.o
 test-y += nvdla.o
 test-y += sdp.o
+test-y += conv.o
 
 %/test.o: $(foreach obj,$(test-y),%/$(obj))
 	$(call merge_objs,$@,$^)
