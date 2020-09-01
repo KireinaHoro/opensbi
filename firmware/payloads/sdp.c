@@ -302,9 +302,12 @@ void dla_sdp_program() {
     uint32_t batch = 1;
     uint32_t w = 16;
     uint32_t h = 1;
-    uint32_t c = 1;
-    uint32_t ls = w;
-    uint32_t ss = c;
+    // channel are in units of atoms
+    uint32_t c = 1 * atom_size;
+
+    // packed: need to multiply by atom size
+    uint32_t ls = w * atom_size;
+    uint32_t ss = w * h * atom_size;
     uint32_t bs = batch;
 
     // set marker bytes
