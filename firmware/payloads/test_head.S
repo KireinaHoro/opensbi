@@ -7,6 +7,8 @@
  *   Anup Patel <anup.patel@wdc.com>
  */
 
+#include "newlib.h"
+
 #include <sbi/riscv_encoding.h>
 #define __ASM_STR(x)	x
 
@@ -39,9 +41,9 @@ _start:
 	la	a3, _boot_a1
 	REG_S	a1, 0(a3)
 
-	/* Zero-out BSS */
+	/* Zero-out BSS & SBSS */
 	la	a4, _bss_start
-	la	a5, _bss_end
+	la	a5, _sbss_end
 _bss_zero:
 	REG_S	zero, (a4)
 	add	a4, a4, __SIZEOF_POINTER__
@@ -52,18 +54,15 @@ _start_warm:
 	csrw	CSR_SIE, zero
 	csrw	CSR_SIP, zero
 
-	/* Setup exception vectors */
-	la	a3, _start_hang
-	csrw	CSR_STVEC, a3
-
-	/* Setup stack */
-	la	a3, _payload_end
-	li	a4, 0x2000
-	add	sp, a3, a4
 
     /* setup trap handler */
     la  a3, trap_vec
     csrw stvec, a3
+	/* Setup stack */
+	la	sp, _stack_top
+  
+    /* Call constructors */
+    call    __libc_init_array
 
 	/* Jump to C main */
 	la	a3, _boot_a0
@@ -71,6 +70,7 @@ _start_warm:
 	la	a3, _boot_a1
 	REG_L	a1, 0(a3)
 	call	test_main
+    tail exit
 
 	/* We don't expect to reach here hence just hang */
 	j	_start_hang

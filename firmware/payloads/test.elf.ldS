@@ -10,6 +10,8 @@
 OUTPUT_ARCH(riscv)
 ENTRY(_start)
 
+#include "mapping.h"
+
 SECTIONS
 {
 #ifdef FW_PAYLOAD_OFFSET
@@ -29,6 +31,7 @@ SECTIONS
 		PROVIDE(_text_start = .);
 		*(.entry)
 		*(.text)
+		*(.text.*)
 		. = ALIGN(8);
 		PROVIDE(_text_end = .);
 	}
@@ -79,9 +82,25 @@ SECTIONS
 		PROVIDE(_bss_end = .);
 	}
 
+	.sbss :
+	{
+		PROVIDE(_sbss_start = .);
+		*(.sbss)
+		*(.sbss.*)
+		. = ALIGN(8);
+		PROVIDE(_sbss_end = .);
+	}
+
 	/* End of the read-write data sections */
 
-	. = ALIGN(0x1000); /* Need this to create proper sections */
+	/* Heap page aligned */
+	. = ALIGN(0x1000);
+	PROVIDE(_heap_start = .);
 
-	PROVIDE(_payload_end = .);
+	/* trap and normal stack */
+	. = DDR_BASE + DDR_SIZE - 0x10000;
+	PROVIDE(_stack_end = .);
+
+	. = DDR_BASE + DDR_SIZE;
+	PROVIDE(_stack_top = .);
 }

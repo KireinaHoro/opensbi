@@ -43,6 +43,8 @@
 #define PLIC_MCLAIM(hart) (PLIC + 0x200004 + (hart)*0x2000)
 #define PLIC_SCLAIM(hart) (PLIC + 0x201004 + (hart)*0x2000)
 
+#include "mapping.h"
+
 // IRQs
 #define PWM0_IRQ 4
 #define PWM1_IRQ 5
@@ -60,21 +62,51 @@
 #define PWM_CMP3 (PWM_BASE + 0x2c)
 
 // pwmcfg fields
-#define PWMSCALE      0b1111 // [3:0]
-#define PWMSTICKY     (1 << 8)
-#define PWMZEROCMP    (1 << 9)
-#define PWMDEGLITCH   (1 << 10)
-#define PWMENALWAYS   (1 << 12)
-#define PWMENONESHOT  (1 << 13)
+#define PWMSCALE 0b1111 // [3:0]
+#define PWMSTICKY (1 << 8)
+#define PWMZEROCMP (1 << 9)
+#define PWMDEGLITCH (1 << 10)
+#define PWMENALWAYS (1 << 12)
+#define PWMENONESHOT (1 << 13)
 #define PWMCMP0CENTER (1 << 16)
 #define PWMCMP1CENTER (1 << 17)
 #define PWMCMP2CENTER (1 << 18)
 #define PWMCMP3CENTER (1 << 19)
-#define PWMCMP0GANG   (1 << 24)
-#define PWMCMP1GANG   (1 << 25)
-#define PWMCMP2GANG   (1 << 26)
-#define PWMCMP3GANG   (1 << 27)
-#define PWMCMP0IP     (1 << 28)
-#define PWMCMP1IP     (1 << 29)
-#define PWMCMP2IP     (1 << 30)
-#define PWMCMP3IP     (1 << 31)
+#define PWMCMP0GANG (1 << 24)
+#define PWMCMP1GANG (1 << 25)
+#define PWMCMP2GANG (1 << 26)
+#define PWMCMP3GANG (1 << 27)
+#define PWMCMP0IP (1 << 28)
+#define PWMCMP1IP (1 << 29)
+#define PWMCMP2IP (1 << 30)
+#define PWMCMP3IP (1 << 31)
+
+// virtual memory
+#define PTE_V (1L << 0) // valid
+#define PTE_R (1L << 1)
+#define PTE_W (1L << 2)
+#define PTE_X (1L << 3)
+#define PTE_U (1L << 4)
+#define PTE_G (1L << 5)
+#define PTE_A (1L << 6)
+#define PTE_D (1L << 7)
+
+#define PGSIZE 4096  // bytes per page
+#define PGSHIFT 12   // bits of offset within a page
+#define PXMASK 0x1FF // 9 bits
+#define PA2PTE(pa) ((((uint64)pa) >> 12) << 10)
+#define PTE2PA(pte) (((pte) >> 10) << 12)
+
+#define SATP_SV39 (8L << 60)
+#define MAKE_SATP(pagetable) (SATP_SV39 | (((uint64)pagetable) >> 12))
+
+#define CLINT 0x2000000L
+#define PLIC 0x0c000000L
+#define UART 0x10010000L
+
+typedef uint64_t uint64;
+typedef uint64_t pte_t;
+typedef uint64_t pde_t;
+typedef uint64_t *pagetable_t; // 512 PTEs in a single page
+
+void vminit();

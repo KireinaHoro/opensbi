@@ -54,46 +54,17 @@ static inline void sbi_ecall_console_printhex(uint64_t num) {
     }
 }
 
-uint64_t cpuid() {
-    return r_tp();
-}
+uint64_t cpuid() { return r_tp(); }
 
 // a0 holds the hartid
 // a1 holds the device tree address
-void test_main(unsigned long a0, unsigned long a1)
-{
+void test_main(unsigned long a0, unsigned long a1) {
     // store cpuid
     w_tp(a0);
-	printf("Test payload running\n");
+    printf("Test payload running\n");
 
-    printf("Setting up PLIC...\n");
-    *(uint32_t*)(PLIC + PWM0_IRQ * 4) = 1;
+    vminit();
 
-    printf("Enabling interrupt for PWM0...\n");
-    uint64_t hart = cpuid();
-    // enable PWM0
-    *(uint32_t*)PLIC_SENABLE(hart) = (1 << PWM0_IRQ);
-    // set S-mode priority threshold to 0
-    *(uint32_t*)PLIC_SPRIORITY(hart) = 0;
-
-    printf("Initializing PWM...\n");
-    *(uint32_t*)(PWM_CMP0) = DELAY_TICKS >> 15; // ticks / 2^15
-    *(uint32_t*)(PWM_CMP1) = 0xffff; // disabled
-    *(uint32_t*)(PWM_CMP2) = 0xffff; // disabled
-    *(uint32_t*)(PWM_CMP3) = 0xffff; // disabled
-    *(uint32_t*)(PWM_CFG) = (15) | PWMZEROCMP | PWMSTICKY;
-    *(uint32_t*)(PWM_COUNT) = 0;
-
-    printf("Enabling PWM...\n");
-    *(uint32_t*)(PWM_CFG) |= PWMENALWAYS;
-
-    printf("Turning on interrupts...\n");
-    intr_on();
-
-    while (true) {
-        print_pwm_counters();
-        wfi();
-    }
 
     exit(0);
 }
@@ -130,29 +101,11 @@ void trap_handler() {
                 printf("Spurious IRQ\n");
             }
 
-            //printf("Completing IRQ %d\n", irq);
-            *(uint32_t*)PLIC_SCLAIM(hart) = irq;
+            // printf("Completing IRQ %d\n", irq);
+            *(uint32_t *)PLIC_SCLAIM(hart) = irq;
         }
-        
-        //printf("Resuming...\n");
     }
-}
-
-int _write(int file, char *ptr, int len)
-{
-    int i;
-    file = file;
-    for (i = 0; i < len; i++) {
-        sbi_ecall_console_putc(*ptr++);
-    }
-    return len;
-}
-
-void _exit(int n)
-{
-    sbi_ecall_console_puts("exit(");
-    sbi_ecall_console_printhex(n);
-    sbi_ecall_console_puts(") called, halting\n");
+    printf("Halting...\n");
     while (true) {
         wfi();
     }
