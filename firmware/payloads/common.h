@@ -109,4 +109,5 @@ typedef uint64_t pte_t;
 typedef uint64_t pde_t;
 typedef uint64_t *pagetable_t; // 512 PTEs in a single page
 
+void ram_bench();
 void vminit();

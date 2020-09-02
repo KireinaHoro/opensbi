@@ -65,6 +65,7 @@ void test_main(unsigned long a0, unsigned long a1) {
 
     vminit();
 
+    ram_bench();
 
     exit(0);
 }
