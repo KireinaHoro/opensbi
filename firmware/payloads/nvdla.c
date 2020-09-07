@@ -66,12 +66,24 @@ void handle_dla() {
 
     char *src_addr = (char *)SRC_ADDR;
     char *dst_addr = (char *)DST_ADDR;
+    char *weight_addr = (char *)WEIGHT_ADDR;
+    char *input_addr = (char *)INPUT_ADDR;
+    char *out_addr = (char *)OUT_ADDR;
 
     printf("Source memory @ %p:\n", src_addr);
     hexdump(src_addr, DUMP_SIZE);
 
     printf("Destination memory @ %p:\n", dst_addr);
     hexdump(dst_addr, DUMP_SIZE);
+
+    printf("Weight memory @ %p:\n", weight_addr);
+    hexdump(weight_addr, DUMP_SIZE);
+
+    printf("Input memory @ %p:\n", input_addr);
+    hexdump(input_addr, DUMP_SIZE);
+
+    printf("Out memory @ %p:\n", out_addr);
+    hexdump(out_addr, DUMP_SIZE);
 
     printf("Clearing interrupt...\n");
 
@@ -99,7 +111,7 @@ void enable_dla() {
     printf("NVDLA Version %u\n", ver);
 
     dla_sdp_program();
-    // intr_test();
+    // dla_conv_program();
 }
 
 void reg_write(uint32_t addr, uint32_t reg) {

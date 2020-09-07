@@ -282,7 +282,13 @@ void processor_sdp_program(uint64_t src_addr, uint64_t dst_addr, uint32_t batch,
 }
 
 const char *test_string =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do";
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod "
+    "tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim "
+    "veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea "
+    "commodo consequat. Duis aute irure dolor in reprehenderit in voluptate "
+    "velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint "
+    "occaecat cupidatat non proident, sunt in culpa qui officia deserunt "
+    "mollit anim id est laborum.";
 
 void dla_sdp_program() {
     TRACE("SDP data movement test")
@@ -294,8 +300,8 @@ void dla_sdp_program() {
     printf("Moving test string from %#lx to %#lx...\n", src_addr, dst_addr);
 
     uint32_t batch = 1;
-    uint32_t w = 2;
-    uint32_t h = 1;
+    uint32_t w = 3;
+    uint32_t h = 3;
     // channel are in units of atoms
     uint32_t c = 1 * ATOM_SIZE;
 

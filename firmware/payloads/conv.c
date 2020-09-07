@@ -125,14 +125,14 @@ void dla_conv_enable() {
 
 void processor_conv_program(
     uint64_t weight_address, uint64_t weight_size, uint64_t input_address,
-    uint64_t output_address, uint32_t batch, uint32_t batch_stride,
-    uint32_t dst_w, uint32_t dst_h, uint32_t dst_c, uint32_t dst_line_stride,
-    uint32_t dst_surf_stride, uint32_t src_w, uint32_t src_h, uint32_t src_c,
-    uint32_t src_line_stride, uint32_t src_surf_stride, uint32_t kern_w,
-    uint32_t kern_h, uint32_t kern_c, uint32_t conv_stride_x,
-    uint32_t conv_stride_y, uint32_t pad_x_left, uint32_t pad_x_right,
-    uint32_t pad_y_top, uint32_t pad_y_bottom, uint8_t pad_val,
-    uint32_t dilation_x, uint32_t dilation_y) {
+    uint64_t output_address /* not used in hardware */, uint32_t batch,
+    uint32_t batch_stride, uint32_t dst_w, uint32_t dst_h, uint32_t dst_c,
+    uint32_t dst_line_stride, uint32_t dst_surf_stride, uint32_t src_w,
+    uint32_t src_h, uint32_t src_c, uint32_t src_line_stride,
+    uint32_t src_surf_stride, uint32_t kern_w, uint32_t kern_h, uint32_t kern_c,
+    uint32_t conv_stride_x, uint32_t conv_stride_y, uint32_t pad_x_left,
+    uint32_t pad_x_right, uint32_t pad_y_top, uint32_t pad_y_bottom,
+    uint8_t pad_val, uint32_t dilation_x, uint32_t dilation_y) {
     TRACE("enter")
 
     uint32_t reg, high, low, shift, mask;
@@ -151,6 +151,7 @@ void processor_conv_program(
     uint8_t src_type = 0;    // MCIF
     uint8_t weight_type = 0; // MCIF
     uint8_t mean_format = 0; // mean registers not used
+    uint8_t truncate = 0;    // do not use out converter
 
     // TODO: figure out following from compiler (ConvCoreNode.cpp)
     uint8_t skip_data_rls = 0;
@@ -255,7 +256,7 @@ void processor_conv_program(
     }
     cacc_reg_write(D_DATAOUT_MAP, reg);
 
-    cacc_reg_write(D_CLIP_CFG, conv_op->out_cvt.truncate);
+    cacc_reg_write(D_CLIP_CFG, truncate);
 
     /* CMAC */
     reg = (map_conv[conv_mode] << SHIFT(CMAC_A_D_MISC_CFG_0, CONV_MODE)) |
@@ -464,37 +465,79 @@ void processor_conv_program(
           ((data_bank - 1) << SHIFT(CDMA_D_BANK_0, DATA_BANK));
     cdma_reg_write(D_BANK, reg);
 
-exit:
-    dla_trace("Exit: %s", __func__);
-    RETURN(ret);
+    TRACE("exit")
 }
 
-int dla_conv_is_ready(struct dla_processor *processor,
-                      struct dla_processor_group *group) {
-    return 1;
-}
+// 3x3; weight data do not require padding in C dim
+const uint8_t weight[] = {1, 1, 3, 2, 1, 1, 0, 3, 3};
+// 5x5; feature data require padding in C dim to ATOM_SIZE
+const uint64_t data[] = {2, 5, 7, 5, 6, 7, 4, 1, 5, 7, 0, 0, 7,
+                         2, 6, 7, 3, 1, 2, 4, 4, 5, 0, 5, 7};
+// direct conv output w/o padding; 3x3
+const uint64_t output[] = {68, 68, 68, 33, 38, 67, 54, 37, 71};
 
-void dla_conv_dump_config(struct dla_processor_group *group) {
-    struct dla_conv_op_desc *conv_op;
-    struct dla_conv_surface_desc *conv_surface;
+void dla_conv_program() {
+    TRACE("CONV basic function test")
 
-    conv_surface = &group->surface_desc->conv_surface;
-    conv_op = &group->operation_desc->conv_op;
+    uint64_t weight_size = sizeof(weight);
+    if ((weight_size & (128 - 1)) != 0) {
+        weight_size = (weight_size & ~(128 - 1)) + 128;
+    }
+    printf("weight_size = %ld\n", weight_size);
 
-    dla_debug_conv_surface_desc(conv_surface, group->roi_index);
-    dla_debug_conv_op_desc(conv_op, group->roi_index);
-}
+    uint32_t batch = 1;
+    uint32_t batch_s = 1;
 
-int dla_conv_program(struct dla_processor_group *group) {
-    int32_t ret;
+    uint32_t dst_w = 3;
+    uint32_t dst_h = 3;
+    uint32_t dst_c = 1 * ATOM_SIZE;
+    uint32_t dst_ls = dst_w * ATOM_SIZE;
+    uint32_t dst_ss = dst_w * dst_h * ATOM_SIZE;
 
-    dla_trace("Enter: %s", __func__);
+    memset((void *)OUT_ADDR, 0xCC, DUMP_SIZE);
 
-    ret = processor_conv_program(group);
-    if (ret)
-        goto exit;
+    uint32_t src_w = 5;
+    uint32_t src_h = 5;
+    uint32_t src_c = 1 * ATOM_SIZE;
+    uint32_t src_ls = src_w * ATOM_SIZE;
+    uint32_t src_ss = src_w * src_h * ATOM_SIZE;
 
-exit:
-    dla_trace("Exit: %s", __func__);
-    RETURN(ret);
+    memset((void *)INPUT_ADDR, 0xDD, DUMP_SIZE);
+    memcpy((void *)INPUT_ADDR, data, sizeof(data));
+
+    uint32_t kern_w = 3;
+    uint32_t kern_h = 3;
+    uint32_t kern_c = 1; // FIXME: multiplication of ATOM_SIZE or not?
+
+    memset((void *)WEIGHT_ADDR, 0xEE, DUMP_SIZE);
+    memcpy((void *)WEIGHT_ADDR, weight, sizeof(weight));
+
+    uint32_t conv_stride_x = 1;
+    uint32_t conv_stride_y = 1;
+    uint32_t pad_x_left = 0;
+    uint32_t pad_x_right = 0;
+    uint32_t pad_y_top = 0;
+    uint32_t pad_y_bottom = 0;
+    uint8_t pad_val = 0;
+    uint32_t dilation_x = 0;
+    uint32_t dilation_y = 0;
+
+    processor_conv_program(WEIGHT_ADDR, weight_size, INPUT_ADDR,
+                           0 /* output_address */, batch, batch_s, dst_w, dst_h,
+                           dst_c, dst_ls, dst_ss, src_w, src_h, src_c, src_ls,
+                           src_ss, kern_w, kern_h, kern_c, conv_stride_x,
+                           conv_stride_y, pad_x_left, pad_x_right, pad_y_top,
+                           pad_y_bottom, pad_val, dilation_x, dilation_y);
+
+    // write back to memory
+    processor_sdp_program(0 /* fly-by */, OUT_ADDR, batch, dst_w, dst_h, dst_c,
+                          dst_ls, dst_ss, batch_s);
+
+    dla_sdp_set_producer(0, 0);
+    dla_conv_set_producer(0, 0);
+
+    dla_sdp_enable(false);
+    dla_conv_enable();
+
+    TRACE("exit")
 }
