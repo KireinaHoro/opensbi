@@ -166,20 +166,17 @@ void processor_conv_program(
     uint32_t weight_bytes = 0;
 
     if (weight_address != 0) {
-        CHECK_ALIGN(weight_address, atom_size);
+        CHECK_ALIGN(weight_address, ATOM_SIZE);
         CHECK_ALIGN(weight_size, 128);
     }
 
     if (output_address != 0) {
-        CHECK_ALIGN(output_address, atom_size);
-        CHECK_ALIGN(dst_line_stride, atom_size);
-        CHECK_ALIGN(dst_surf_stride, atom_size);
+        CHECK_ALIGN(output_address, ATOM_SIZE);
+        CHECK_ALIGN(dst_line_stride, ATOM_SIZE);
+        CHECK_ALIGN(dst_surf_stride, ATOM_SIZE);
     }
 
-    CHECK_ALIGN(input_address, atom_size);
-
-    assert(conv_op->out_cvt.scale == 1);
-    assert(conv_op->out_cvt.offset == 0);
+    CHECK_ALIGN(input_address, ATOM_SIZE);
 
     /* check if the register group is idle */
     reg = cacc_reg_read(S_STATUS);
@@ -245,7 +242,7 @@ void processor_conv_program(
     cacc_reg_write(D_SURF_STRIDE, dst_surf_stride);
 
     if (dst_w == 1 && dst_h == 1) {
-        assert(dst_line_stride == dst_w * atom_size);
+        assert(dst_line_stride == dst_w * ATOM_SIZE);
         reg = (CACC_D_DATAOUT_MAP_0_LINE_PACKED_TRUE
                << SHIFT(CACC_D_DATAOUT_MAP_0, LINE_PACKED));
         reg |= (CACC_D_DATAOUT_MAP_0_SURF_PACKED_TRUE
@@ -402,9 +399,9 @@ void processor_conv_program(
     cdma_reg_write(D_SURF_STRIDE, src_surf_stride);
     cdma_reg_write(D_LINE_UV_STRIDE, in_line_uv_stride);
 
-    reg = ((src_line_stride == (src_w * atom_size))
+    reg = ((src_line_stride == (src_w * ATOM_SIZE))
            << SHIFT(CDMA_D_DAIN_MAP_0, LINE_PACKED));
-    reg |= ((src_surf_stride == (src_w * src_h * atom_size))
+    reg |= ((src_surf_stride == (src_w * src_h * ATOM_SIZE))
             << SHIFT(CDMA_D_DAIN_MAP_0, SURF_PACKED));
     cdma_reg_write(D_DAIN_MAP, reg);
 

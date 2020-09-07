@@ -160,12 +160,12 @@ void processor_sdp_program(uint64_t src_addr, uint64_t dst_addr, uint32_t batch,
         TRACE("input fly-by")
     } else {
         TRACE("input from RAM")
-        CHECK_ALIGN(src_addr, atom_size);
+        CHECK_ALIGN(src_addr, ATOM_SIZE);
     }
 
     if (out_dma_ena) {
         TRACE("output to RAM")
-        CHECK_ALIGN(dst_addr, atom_size);
+        CHECK_ALIGN(dst_addr, ATOM_SIZE);
     } else {
         TRACE("output fly-by")
     }
@@ -297,11 +297,11 @@ void dla_sdp_program() {
     uint32_t w = 2;
     uint32_t h = 1;
     // channel are in units of atoms
-    uint32_t c = 2 * atom_size;
+    uint32_t c = 1 * ATOM_SIZE;
 
     // packed: need to multiply by atom size
-    uint32_t ls = w * atom_size;
-    uint32_t ss = w * h * atom_size;
+    uint32_t ls = w * ATOM_SIZE;
+    uint32_t ss = w * h * ATOM_SIZE;
     uint32_t bs = batch;
 
     // set marker bytes
