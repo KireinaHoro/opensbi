@@ -110,8 +110,8 @@ void enable_dla() {
     uint32_t ver = glb_reg_read(S_NVDLA_HW_VERSION);
     printf("NVDLA Version %u\n", ver);
 
-    dla_sdp_program();
-    // dla_conv_program();
+    // dla_sdp_program();
+    dla_conv_program();
 }
 
 void reg_write(uint32_t addr, uint32_t reg) {

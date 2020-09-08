@@ -158,13 +158,15 @@ void processor_conv_program(
     uint8_t skip_weight_rls = 0;
     uint32_t entry_per_slice = 0;
     uint32_t release = 0;
+    // FIXME: calculate from cude dimensions
+    // NOTE: 16 32KB banks
     uint32_t data_bank = 0;
     uint32_t weight_bank = 0;
     uint32_t offset_u = 0;
     uint32_t in_line_uv_stride = 0;
     uint32_t fetch_grain = 0;
-    uint32_t bytes_per_kernel = 0;
-    uint32_t weight_bytes = 0;
+    // FIXME: is this correct?
+    uint32_t bytes_per_kernel = kern_w * kern_h * kern_c;
 
     if (weight_address != 0) {
         CHECK_ALIGN(weight_address, ATOM_SIZE);
@@ -436,7 +438,7 @@ void processor_conv_program(
     low = LOW32BITS(weight_address);
     cdma_reg_write(D_WEIGHT_ADDR_HIGH, high);
     cdma_reg_write(D_WEIGHT_ADDR_LOW, low);
-    cdma_reg_write(D_WEIGHT_BYTES, weight_bytes);
+    cdma_reg_write(D_WEIGHT_BYTES, weight_size);
 
     reg = (map_mean[mean_format] << SHIFT(CDMA_D_MEAN_FORMAT_0, MEAN_FORMAT));
     cdma_reg_write(D_MEAN_FORMAT, reg);
